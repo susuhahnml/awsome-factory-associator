@@ -53,6 +53,7 @@ describe('Factories test', function() {
   it('should randomly create and increment', () => {
     factory.define('activeRandom', Restaurant)
       .attr("name", faker.lorem.word, {auto_increment: 2});
+
     return factory.create('activeRandom')
       .then((restaurant) => {
         (restaurant instanceof Restaurant).should.be.true();
@@ -63,6 +64,33 @@ describe('Factories test', function() {
         result.count.should.equal(1);
       })
   });
+
+  it('should overwrite an increment', () => {
+    factory.define('activeRandom', Restaurant)
+      .attr("name", faker.lorem.word, {auto_increment: 2});
+
+    return factory.create('activeRandom',{name:"NewName"})
+      .then((restaurant) => {
+        (restaurant instanceof Restaurant).should.be.true();
+        restaurant.name.should.eql("NewName");
+      })
+  });
+
+
+  // it.only('should create an incremt with number', () => {
+  //   factory.define('activeRandom', Restaurant)
+  //     .attr("number", 1, {auto_increment: 1});
+  //
+  //   return factory.create('activeRandom')
+  //     .then((restaurant) => {
+  //       (restaurant instanceof Restaurant).should.be.true();
+  //       restaurant.number.should.eql(1);
+  //       return factory.create('activeRandom')
+  //     })
+  //     .then((restarurant2) => {
+  //       restaurant.number.should.eql(2);
+  //     })
+  // });
 
   it('should alter define', () => {
     factory.define('active', Restaurant)
