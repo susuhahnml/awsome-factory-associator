@@ -1,0 +1,102 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "sails-industrial-factory@^1.1.2",
+        "scope": null,
+        "escapedName": "sails-industrial-factory",
+        "name": "sails-industrial-factory",
+        "rawSpec": "^1.1.2",
+        "spec": ">=1.1.2 <2.0.0",
+        "type": "range"
+      },
+      "/Users/susana/Jaque/abc-reports"
+    ]
+  ],
+  "_from": "sails-industrial-factory@>=1.1.2 <2.0.0",
+  "_id": "sails-industrial-factory@1.1.2",
+  "_inCache": true,
+  "_location": "/sails-industrial-factory",
+  "_nodeVersion": "6.10.1",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/sails-industrial-factory-1.1.2.tgz_1501802497297_0.2282887923065573"
+  },
+  "_npmUser": {
+    "name": "malpercio",
+    "email": "danielglezespinoza@gmail.com"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "sails-industrial-factory@^1.1.2",
+    "scope": null,
+    "escapedName": "sails-industrial-factory",
+    "name": "sails-industrial-factory",
+    "rawSpec": "^1.1.2",
+    "spec": ">=1.1.2 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/sails-industrial-factory/-/sails-industrial-factory-1.1.2.tgz",
+  "_shasum": "19891c8d8496dfdc30a62462e4dba2218335934d",
+  "_shrinkwrap": null,
+  "_spec": "sails-industrial-factory@^1.1.2",
+  "_where": "/Users/susana/Jaque/abc-reports",
+  "author": {
+    "name": "malpercio"
+  },
+  "bugs": {
+    "url": "https://github.com/malpercio/sails-industrial-factory/issues"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "pg": "^7.4.1",
+    "require-tree": "^1.1.1"
+  },
+  "description": "Simple model factory for Sails.js with Sequelize inspired by Sails Factory",
+  "devDependencies": {
+    "bithound": "^1.7.0",
+    "eslint": "^4.3.0",
+    "faker": "^4.1.0",
+    "lodash": "^4.17.4",
+    "mocha": "^3.4.2",
+    "mysql2": "^1.3.6",
+    "sails": "^0.12.13",
+    "sails-hook-fireline": "^2.0.0",
+    "should": "^11.2.1"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "19891c8d8496dfdc30a62462e4dba2218335934d",
+    "tarball": "https://registry.npmjs.org/sails-industrial-factory/-/sails-industrial-factory-1.1.2.tgz"
+  },
+  "gitHead": "97d1e9f5e55f75e340f2201f00bfa02cb9ef48ef",
+  "homepage": "https://github.com/malpercio/sails-industrial-factory#readme",
+  "keywords": [
+    "sails",
+    "factory",
+    "sequelize"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "malpercio",
+      "email": "danielglezespinoza@gmail.com"
+    }
+  ],
+  "name": "sails-industrial-factory",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malpercio/sails-industrial-factory.git"
+  },
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha test/bootstrap.test.js test --recursive"
+  },
+  "version": "1.1.2"
+}
