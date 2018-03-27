@@ -31,7 +31,7 @@ const sailsrc = {
 
   models: {
     connection: 'testConnection',
-    migrate: 'alter'
+    migrate: 'drop'
   },
 }
 

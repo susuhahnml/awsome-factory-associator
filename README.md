@@ -11,15 +11,15 @@
 - Sequelize
 
 ### Definition
-The javascript files inside the folder `test/facass`, will contain the definitions. We advise you to make one file for each model which will export the factories regarding such model.
+The javascript files inside the folder `test/factory`, will contain the definitions. We advise you to make one file for each model which will export the factories regarding such model.
 
 #### Factory name
 ``ass.define(factoryName, Model)``
 - *factoryName*: A String which defines the name used for creations
 - *Model*: References the model
 ```javascript
-  module.exports = function(facass) {
-    facass.define("ticketFact", Ticket);
+  module.exports = function(factory) {
+    factory.define("ticketFact", Ticket);
   }
 ```
 
@@ -28,20 +28,20 @@ The javascript files inside the folder `test/facass`, will contain the definitio
 - *attributeName*: A String which references the name of the attribute. If an attribute must be **unique**, we advise you to use faker or auto-increment to avoid creation Errors.
 - *value*: The default value used in creations. If the value is a function it will be called in each creation to generate the final value. This value can be overwritten on each creation.
 - *options*: An optional object indicating some of the following options.
-  - auto_increment: In each instance creation will increment the value of the last creation by the number indicated in the auto_increment option. Starting at the initial value given. Sequence is shared among parent and children.
+  - auto_increment: In each instance creation will increment the value of the last creation by the number indicated in the auto_increment option. Starting at the initial value given. Sequence is shared among parent and children if not overwrited. If value is a string will add the sequence number at the end of the string starting in 1.
 
 
 ```javascript
-  facass.define("ticketFact", Ticket)
+  factory.define("ticketFact", Ticket)
   .attr("seat","22A")
-  .attr("code","1",{auto_increment: 1}) //adds 1 to each creation
-  .attr("folio",function() { return Math.random(); }) //folio must be random
+  .attr("code",1,{auto_increment: 1}) //adds 1 to each creation
+  .attr("price",function() { return Math.round(100*Math.random()); }) //price must be random
 ```
 
 ### Usage
 To use this module it must be required in your file
 ``` javascript
-const facass = require("awsome-factory-associator");
+const factory = require("awsome-factory-associator");
 ```
 ##### Create
 
@@ -51,9 +51,9 @@ const facass = require("awsome-factory-associator");
 
 This function will return a **promise** with the createdModel.
 ```javascript
-  facass.create("ticketFact"); //Creates a ticket with the default seat and folio and code 1(inital value).
+  factory.create("ticketFact"); //Creates a ticket with the default seat and price and code 1(inital value).
 
-  facass.create("ticketFact",{seat:"1F"}); //Creates a ticket with the default folio but seat 1F and code 2(inital value + 1).
+  factory.create("ticketFact",{seat:"1F"}); //Creates a ticket with the default price but seat 1F and code 2(inital value + 1).
 ```
 
 ##### Build
@@ -69,14 +69,14 @@ This function works like create, but it only returns the object properties **wit
 can be overwritten in the current model.
 
 ```javascript
-  facass.define("ticketFact", Ticket)
+  factory.define("ticketFact", Ticket)
   .attr("seat","22A")
-  .attr("folio",function() { return Math.random(); })
+  .attr("price",function() { return Math.round(100*Math.random()); })
 
-  facass.define("ticketWithLevel", Ticket)
+  factory.define("ticketWithLevel", Ticket)
   .parent("ticketFact")
   .attr("level",1)
-  //The created instance will have the attribute seat and a random folio generated on the creation
+  //The created instance will have the attribute seat and a random price generated on the creation
 ```
 
 #### BelongsToOne Associations
@@ -97,17 +97,17 @@ can be overwritten in the current model.
 ```
 
 ```javascript
-  facass.define("saleFact", Sale)
+  factory.define("saleFact", Sale)
   .attr("total",120)
 
-  facass.define("ticketFact", Ticket)
+  factory.define("ticketFact", Ticket)
   .attr("seat","22A")
   .attr("price",30)
   .assoc("sale_key","saleFact", {total:30})
 ```
 ##### Usage
 ```javascript
-facass.create("ticketFact"); //Creates a ticket and a sale
+factory.create("ticketFact"); //Creates a ticket and a sale
 ```
 It will first create the associated *model* (Sale) and pass its id as value of the *foreignKeyName* (sale_key) param.
 
@@ -115,9 +115,9 @@ It will first create the associated *model* (Sale) and pass its id as value of t
 When the object to associate has **already** been **crated** its id can be passed in the options object using the foreignKey. When an id is passed no additional object creation will be made. In this example the sale is already created and its id is passed to the ticket creation. Only one sale will be crated in this example.
 
 ```javascript
-  facass.create("saleFact",{total:10})//Crates a sale and return the promise
+  factory.create("saleFact",{total:10})//Crates a sale and return the promise
   .then((saleCreated){
-    facass.create("ticketFact",{sale_key:saleCreated.id}); //Uses the sale already created
+    factory.create("ticketFact",{sale_key:saleCreated.id}); //Uses the sale already created
   })
   .catch(err){
     //Handle error
@@ -127,7 +127,7 @@ When the object to associate has **already** been **crated** its id can be passe
 ##### Passing options for associated model.
 With the options object the associated model attributes can be modified, by sending and object with the options as value of the foreignKey. This options will rewrite and be added to the defaults.
 ```javascript
-  facass.create("ticketFact",{sale_key:{total:100,date:'2018-2-1'}});
+  factory.create("ticketFact",{sale_key:{total:100,date:'2018-2-1'}});
 ```
 In this case when creating the sale defined in the ticketFact definition using the saleFact factory, the obtect ``{total:100,date:'2018-2-1'}`` will be passed as options for this creation. This will create a ticket associated with a sale with total 100(rewriting the default 30), and with date 2018-2-1.
 
@@ -141,51 +141,51 @@ In this case when creating the sale defined in the ticketFact definition using t
 
 
 ```javascript
-  Salesman.belongsToMany(PointOfSale, {
-    as: 'PointOfSaleHired',
-    through: 'SalesmanPointOfSale', //Table Name not used
+  Salesman.belongsToMany(Store, {
+    as: 'StoreHired',
+    through: 'SalesmanStore', //Table Name not used
     foreignKey: 'salesman_id' //Not used
   }),
-  PointOfSale.belongsToMany(Salesman, {
-    through: 'SalesmanPointOfSale', //Table Name not used
-    foreignKey: 'point_of_sale_id' //Not used
+  Store.belongsToMany(Salesman, {
+    through: 'SalesmanStore', //Table Name not used
+    foreignKey: 'store_id' //Not used
   })
 ```
 
 ```javascript
-  facass.define("pointOfSaleFact", PointOfSale)
+  factory.define("StoreFact", Store)
   .attr("city","London")
 
-  facass.define("salesmanFact", Salesman)
+  factory.define("salesmanFact", Salesman)
   .attr("name","Lol")
-  .assocMany("PointOfSaleHired","pointOfSaleFact",[{city:"Paris"},{}])
-  //If no as is defined, use PointOfSale instead of PointOfSaleHired
+  .assocMany("StoreHired","StoreFact",[{city:"Paris"},{}])
+  //If no as is defined, use Store instead of StoreHired
 ```
 
 ##### Usage
 
 ```javascript
-facass.create("salesmanFact");
+factory.create("salesmanFact");
 ```
 
-It will first create the associated models using the factory pointOfSaleFact, one model passing ``{city:"Paris"}``as options, and another one without passing addition options. After creating both Points of Sale it will create the salesman. Once all models are created, using the function ``setPointOfSaleHireds``*(This function is provided by Sequelize)* with the ids of the created points, it will set the points for the salemsman created.
+It will first create the associated models using the factory StoreFact, one model passing ``{city:"Paris"}``as options, and another one without passing addition options. After creating both Points of Sale it will create the salesman. Once all models are created, using the function ``setStoreHireds``*(This function is provided by Sequelize)* with the ids of the created points, it will set the points for the salemsman created.
 
 ##### Passing array of options
 To pass options for a multiple association the key used must be the *as* string used in the factory definition. The value must be an array, and each element of it can be either an **options object**, in this case it will be used to rewrite the defaults, or an **id** for an **existent object**. In both cases it will be used for the same position in the default array.
 ```javascript
-facass.create("salesmanFact",{"PointOfSaleHired":[{city:"Tokio"}]});
+factory.create("salesmanFact",{"StoreHired":[{city:"Tokio"}]});
 ```
 This will create a point of sale with city Tokio, rewriting the default Paris. Then create the salesman and associated such point of sale.
 
 ```javascript
-facass.create("salesmanFact",{"PointOfSaleHired":[{},{city:"Mexico"}]});
+factory.create("salesmanFact",{"StoreHired":[{},{city:"Mexico"}]});
 ```
 In this case the first point of sale will be have city Paris, and the second one with the city Mexico.
 
 ```javascript
-facass.create("salesmanFact",{"PointOfSaleHired":{size:10}});
+factory.create("salesmanFact",{"StoreHired":{size:10}});
 ```
-In this case it will create 10 PointsOfSale with the default options of the factory *pointOfSaleFact*. Then create the salesman and associated such points of sale.
+In this case it will create 10 PointsOfSale with the default options of the factory *StoreFact*. Then create the salesman and associated such points of sale.
 
 
 #### HasOne Associations
@@ -210,16 +210,16 @@ In this case it will create 10 PointsOfSale with the default options of the fact
 ```
 
 ```javascript
-  facass.define("discountFact", Discount)
+  factory.define("discountFact", Discount)
   .attr("percentage",20)
 
-  facass.define("ticketFactDiscount", Ticket)
+  factory.define("ticketFactDiscount", Ticket)
   .assocAfter("Discount","ticket_key","discountFact") //In this case no options is required
 ```
 ##### Usage
 
 ```javascript
-facass.create("salesmanFact");
+factory.create("salesmanFact");
 ```
 
 When using ``assocAfter`` the main model (Ticket) will be created first, this way we have the ticket id(For instance 23). After its creation the associated model(Discount) will be created using the factoryName(discountFact) and setting the id of the created ticket using the foreignKey(ticket_key) adding `{ticket_key:23}` to the options object.  Since no options are passed it will use the values defined in the first factory. Creating a ticket associated to a discount.
@@ -227,7 +227,7 @@ When using ``assocAfter`` the main model (Ticket) will be created first, this wa
 ##### Passing options
 To pass options for this association the key used must be the *as* string used in the factory definition. The value must be an object to rewrite the default. In this you can **not** an **id** instead of options, since the associated model, if already created, must be related to another model.
 ```javascript
-facass.create("ticketFactDiscount",{seat:"1B",Credit:{percentage:50}})
+factory.create("ticketFactDiscount",{seat:"1B",Credit:{percentage:50}})
 ```
 Creates a ticket with seat 1B. Then using the id of the ticket created creates a discount with factory discountFact passing the options ``{percentage:50,ticket_key:X}`` where ``X`` is the id of the created ticket.
 
@@ -250,18 +250,18 @@ Creates a ticket with seat 1B. Then using the id of the ticket created creates a
 ```
 
 ```javascript
-  facass.define("saleFactWithTickets", Sale)
+  factory.define("saleFactWithTickets", Sale)
   .attr("total",120)
   .assocManyAfter("Ticket","sale_key","ticketFactNoSale",[{price:120/2},{price:120/2}])
 
-  facass.define("ticketFactNoSale", Ticket)
+  factory.define("ticketFactNoSale", Ticket)
 ```
 ##### Usage
 
 It works just as *assocAfter* but passing an array of options as illustrated in *asscoMany*, but in this case **ids** can **not** be passed in the array.
 
 ```javascript
-facass.create("saleFactWithTickets",{Ticket:[{seat:"1A"},{seat:"1B"}]})
+factory.create("saleFactWithTickets",{Ticket:[{seat:"1A"},{seat:"1B"}]})
 ```
 When using ``assocManyAfter`` the first model (Sale) will be created first, this way we have the sale id(For instace 4). After its creation the associeated models(Ticket) will be created using the factoryName(ticketFactNoSale) and setting the id of the created ticket using the foreignKey(sale_key) adding `{sale_key:4}` to the options object in each creation. Hence, the creation options for the first ticket will be `{seat:"1A",sale_key:4}` and for the second `{seat:"1B",sale_key:4}`. Creating two tickets associated with the same sale.
 
@@ -287,13 +287,13 @@ In this example we continue with the last idea of a sale with tickets, but in th
 ```
 
 ```javascript
-  facass.define("passengerFact", Passenger)
+  factory.define("passengerFact", Passenger)
   .attr("name",faker.name.firstName) //Use faker to create a random name
 
-  facass.define("ticketFactPassengerNoSale", Ticket)
+  factory.define("ticketFactPassengerNoSale", Ticket)
   .assoc("passenger_key","passengerFact")
 
-  facass.define("saleFactWithTicketsAndPassenger", Sale)
+  factory.define("saleFactWithTicketsAndPassenger", Sale)
   .attr("total",120)
   .assocManyAfter("Ticket","sale_key","ticketFactNoSale",
   [{$:"passangerName"},{passenger_key:"$passengerName.id"}])
@@ -308,7 +308,7 @@ By using ``$root`` we are able to refer to the sale total, and use it to set the
 All the saved models will be returned in the created object inside the attriute ``$``.
 
 ```javascript
-  facass.create("saleFactWithTicketsAndPassenger", {total: faker.random.number, Ticket:[{price:$root.total/2},{price:$root.total/2}]})
+  factory.create("saleFactWithTicketsAndPassenger", {total: faker.random.number, Ticket:[{price:$root.total/2},{price:$root.total/2}]})
   .then((createdSale) => {
     // createdSale.$ = {
     //   passangerName: //The passenger model created
@@ -335,7 +335,7 @@ fact.create("saleFactWithTickets"); //Infinite loop
 Since the factory saleFactWithTickets creates a ticket but the ticket creates a sale using this same factory, each creation will create one of the other. Hence, this function will never return. -->
 
 ### Extra configurations
-Configuration file ``config/facass.js``
+Configuration file ``config/factory.js``
 #### Loading factories
 #### Unique
 When using the same factory more than one time the models creation might **fail** due to uniqueness issues. This is why we advise you to use **faker** when defining unique attributes. Even by using random data, it can fail by chance. To avoid such errors the creation of a model can be **retried** in case of uniqueness error. The number of times the creation will be retried can be configured in this file, adding ``{creationRetries: times }``, where ``times`` is a number. The default value is **1**.
