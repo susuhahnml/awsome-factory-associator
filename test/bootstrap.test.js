@@ -28,7 +28,7 @@ const sailsrc = {
       }
     }
   },
-
+  port: 1451,
   models: {
     connection: 'testConnection',
     migrate: 'drop'

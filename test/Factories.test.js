@@ -131,4 +131,141 @@ describe('Factories test', function() {
 
   });
 
+  describe('Assoc', function() {
+
+    it('should define a ticket asociated to a sale', () => {
+      factory.define("saleA", Sale)
+      .attr("total",120)
+      factory.define("ticketA", Ticket)
+      .attr("seat","22A")
+      .attr("price",30)
+      .assoc("Sale","saleA", {total:30})
+
+      factory.definitions.ticketA.config.assoc.should.have.property('Sale');
+      factory.definitions.ticketA.config.assoc.Sale.should.have.property('factoryName',"saleA");
+      factory.definitions.ticketA.config.assoc.Sale.should.have.property('options',{total:30});
+      factory.definitions.ticketA.config.assoc.Sale.should.have.property('foreignKey','sale_key');
+    });
+
+    it('should get associations from parent', () => {
+      factory.define("ticketAFree")
+      .parent("ticketA")
+      .attr("price",0)
+
+      factory.definitions.ticketAFree.config.assoc.should.have.property('Sale');
+      factory.definitions.ticketAFree.config.assoc.Sale.should.have.property('factoryName',"saleA");
+      factory.definitions.ticketAFree.config.assoc.Sale.should.have.property('options',{total:30});
+      factory.definitions.ticketAFree.config.assoc.Sale.should.have.property('foreignKey','sale_key');
+    });
+
+    it('should get associations from parent and overwrite associations', () => {
+      factory.define("saleFree", Sale)
+      .attr("total",0)
+      factory.define("ticketAFreeSale")
+      .parent("ticketAFree")
+      .assoc("Sale","saleFree")
+
+      factory.definitions.ticketAFreeSale.config.assoc.should.have.property('Sale');
+      factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('factoryName',"saleFree");
+      factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('options',undefined);
+      factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('foreignKey','sale_key');
+    });
+
+    it('should create a belongs to association', () => {
+      return factory.create('ticketA')
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',30);
+        ticket.Sale.should.have.property('id',ticket.sale_key);
+      })
+    });
+
+    it('should create a belongs to association from id', () => {
+      let sale;
+      return factory.create('saleA')
+      .then((saleCreated) => {
+        sale = saleCreated;
+        return factory.create('ticketA',{Sale:sale.id})
+      })
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',sale.total);
+        ticket.Sale.should.have.property('id',sale.id);
+      })
+    });
+
+    it('should create a belongs to association with options', () => {
+      return factory.create('ticketA', {Sale:{total:0}})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',0);
+        ticket.Sale.should.have.property('id',ticket.sale_key);
+      })
+    });
+
+    it('should create a belongs to association but overwrite if forain key sent', () => {
+      let sale;
+      return factory.create('saleA')
+      .then((saleCreated) => {
+        sale = saleCreated;
+        return factory.create('ticketA',{sale_key:sale.id})
+      })
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',sale.total);
+        ticket.Sale.should.have.property('id',sale.id);
+      })
+    });
+
+    it('should create a belongs to association with save option', () => {
+      return factory.create('ticketA', {Sale:{$:'saleSaved'},$:'ticketCreated'})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',120);
+        ticket.Sale.should.have.property('id',ticket.sale_key);
+        ticket.should.have.property('$');
+        ticket.$.should.have.property('saleSaved');
+        ticket.$.should.have.property('ticketCreated');
+        ticket.$.saleSaved.should.have.property('id',ticket.Sale.id);
+        ticket.$.ticketCreated.should.have.property('id',ticket.id);
+      })
+    });
+
+    it('should use saved instance attribute as attribute', () => {
+      return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.total'})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',ticket.price);
+        ticket.Sale.should.have.property('id',ticket.sale_key);
+        ticket.should.have.property('$');
+      })
+    });
+
+    it('should use saved instance function as attribute', () => {
+      return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal(3)'})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.should.have.property('price',3);
+      })
+    });
+
+    it('should use saved instance function as attribute without attributes', () => {
+      return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal()'})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.should.have.property('price',0);
+      })
+    });
+
+
+  });
+
 });

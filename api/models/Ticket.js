@@ -33,6 +33,7 @@ module.exports = {
       }
     });
     Ticket.hasOne(Discount, {
+      as: 'MainDiscount',
       foreignKey: {
         name: 'ticket_key',
         allowNull: false
