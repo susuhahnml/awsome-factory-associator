@@ -7,4 +7,10 @@ module.exports = (factory) => {
   .attr("code",1,{auto_increment: 1})
   .attr("price",function() { return Math.round(100*Math.random()); }) //price must be random
 
+
+  factory.define("ticketA", Ticket)
+  .attr("seat","22A")
+  .attr("price",30)
+  .assoc("Sale","saleA", {total:30})
+  
 }

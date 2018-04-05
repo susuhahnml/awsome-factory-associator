@@ -178,7 +178,7 @@ In each creation new associations can be added in the options even if not specif
 ``.assocMany(as, factoryName, optionsArray)``
 - *as*: A String which references the *as* value to refer to the associated model. In case there is no *as* defined, the associated model name will work.
 - *factoryName*: The default name of the factory used to create the associated models. Can be overwritten in options using the key *_factoryName*.
-- *options*: An array of **Options object**. Each element of this array will trigger a creation of one associated model this elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating de number of elements to create and the default options for each creation.
+- *options*: An array of **Options object**. Each element of this array will trigger a creation of one associated model this elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating de number of elements to create with the key *_size* and the default options for each creation.
 
 
 ```javascript
@@ -209,7 +209,8 @@ In each creation new associations can be added in the options even if not specif
 factory.create("salesmanFact");
 ```
 
-It will first create the associated models using the factory StoreFact, one model passing ``{city:"Paris"}``as options, and another one without passing addition options. After creating both Stores it will create the salesman. Once all models are created, using the function ``setStoreHireds``*(This function is provided by Sequelize)* with the ids of the created points, it will set the points for the salemsman created.
+It will first create the Salesman model, when this is created, it will create the
+associated models using the factory StoreFact, one model passing ``{city:"Paris"}``as options, and another one without passing additional options. Once all teh stores are created, using the function ``setStoreHireds``*(This function is provided by Sequelize)* with the ids of the created stores, it will set the stores for the salemsman created in teh first step.
 
 ##### Passing array of options
 
@@ -228,7 +229,7 @@ factory.create("salesmanFact",{"StoreHired":[{},1]});
 In this case the first store will be have city London as defined in the options of the factory *StoreFact*, and the second will refer to a Store already created with id 1.
 
 ```javascript
-factory.create("salesmanFact",{"StoreHired":{size:10, city:"Mexico"}});
+factory.create("salesmanFact",{"StoreHired":{_size:10, city:"Mexico"}});
 ```
 In this case it will create 10 PointsOfSale all using Mexico as city, and the default options of the factory *StoreFact*. Then create the salesman and associated such points of sale.
 
@@ -408,3 +409,4 @@ The object returned after the creation will be populated, in order to refer to i
 
 Sobre escribir laves foraneas
 igual y si root
+Ciclos en belongs to many

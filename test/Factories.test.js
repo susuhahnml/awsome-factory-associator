@@ -5,19 +5,19 @@ const faker = require('faker');
 
 describe('Factories test', function() {
 
-  describe('Load', function() {
-    it('should load', () => {
-      factory.load();
-      return factory.create('saleFact')
-        .then((sale) => {
-          (sale instanceof Sale).should.be.true();
-          return Sale.findAndCountAll()
-        })
-        .then((result) => {
-          result.count.should.equal(1);
-        })
-    });
-  });
+  // describe('Load', function() {
+  //   it.only('should load', () => {
+  //     factory.load();
+  //     return factory.create('saleFact')
+  //       .then((sale) => {
+  //         (sale instanceof Sale).should.be.true();
+  //         return Sale.findAndCountAll()
+  //       })
+  //       .then((result) => {
+  //         result.count.should.equal(1);
+  //       })
+  //   });
+  // });
 
   describe('Creation', function() {
 
@@ -134,17 +134,17 @@ describe('Factories test', function() {
   describe('Assoc', function() {
 
     it('should define a ticket asociated to a sale', () => {
-      factory.define("saleA", Sale)
+      factory.define("saleDef", Sale)
       .attr("total",120)
-      factory.define("ticketA", Ticket)
+      factory.define("ticketDef", Ticket)
       .attr("seat","22A")
-      .attr("price",30)
-      .assoc("Sale","saleA", {total:30})
+      .attr("price",16)
+      .assoc("Sale","saleDef", {total:16})
 
-      factory.definitions.ticketA.config.assoc.should.have.property('Sale');
-      factory.definitions.ticketA.config.assoc.Sale.should.have.property('factoryName',"saleA");
-      factory.definitions.ticketA.config.assoc.Sale.should.have.property('options',{total:30});
-      factory.definitions.ticketA.config.assoc.Sale.should.have.property('foreignKey','sale_key');
+      factory.definitions.ticketDef.config.assoc.should.have.property('Sale');
+      factory.definitions.ticketDef.config.assoc.Sale.should.have.property('factoryName',"saleDef");
+      factory.definitions.ticketDef.config.assoc.Sale.should.have.property('options',{total:16});
+      factory.definitions.ticketDef.config.assoc.Sale.should.have.property('foreignKey','sale_key');
     });
 
     it('should get associations from parent', () => {
@@ -262,6 +262,27 @@ describe('Factories test', function() {
         ticket.should.have.property('seat','22A');
         ticket.should.have.property('Sale');
         ticket.should.have.property('price',0);
+      })
+    });
+
+    it('should use saved instance function as attribute without attributes', () => {
+      return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal()'})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.should.have.property('price',0);
+      })
+    });
+
+    it('should create a belongs to association overwriting the factory name', () => {
+      factory.define("saleFacName", Sale)
+      .attr("total",9)
+      return factory.create('ticketA', {Sale:{_factoryName:'saleFacName'}})
+      .then((ticket) => {
+        ticket.should.have.property('seat','22A');
+        ticket.should.have.property('Sale');
+        ticket.Sale.should.have.property('total',9);
+        ticket.Sale.should.have.property('id',ticket.sale_key);
       })
     });
 
