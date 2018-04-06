@@ -50,6 +50,7 @@ before((done) => {
       return done(err);
     }
     global.factory = require('../index.js');
+    factory.load();
     done();
   });
 });
