@@ -5,20 +5,6 @@ const faker = require('faker');
 
 describe('Factories test', function() {
 
-  // describe('Load', function() {
-  //   it.only('should load', () => {
-  //     factory.load();
-  //     return factory.create('saleFact')
-  //       .then((sale) => {
-  //         (sale instanceof Sale).should.be.true();
-  //         return Sale.findAndCountAll()
-  //       })
-  //       .then((result) => {
-  //         result.count.should.equal(1);
-  //       })
-  //   });
-  // });
-
   describe('Creation', function() {
 
     it('should define a factory', () => {
@@ -30,6 +16,16 @@ describe('Factories test', function() {
         return resolve();
       });
     })
+
+    it('should return error defining repeted name', () => {
+      try{
+        factory.define("paasengerRepeted", Passenger);
+        factory.define("paasengerRepeted", Passenger);
+        true.should.be.false();
+      }catch(err){
+        should.exist(err);
+      }
+    });
 
     it('should build', () => {
       return factory.build('passenger')
@@ -55,6 +51,17 @@ describe('Factories test', function() {
         .then((result) => {
           result.count.should.equal(1);
         })
+    });
+
+    it('should error using invalid factory name', () => {
+      try{
+        return factory.create('Wrong')
+        .then(() => {
+          true.should.be.false();
+        })
+      }catch(err){
+        should.exist(err);
+      }
     });
   });
 
@@ -169,6 +176,42 @@ describe('Factories test', function() {
       factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('factoryName',"saleFree");
       factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('options',undefined);
       factory.definitions.ticketAFreeSale.config.assoc.Sale.should.have.property('foreignKey','sale_key');
+    });
+
+    it('should return error defining with invalid association name', () => {
+      try{
+        factory.define("ticketWrongAss", Ticket)
+        .attr("seat","22A")
+        .attr("price",16)
+        .assoc("InvalidAs","saleDef", {total:16})
+        true.should.be.false();
+      }catch(err){
+        should.exist(err);
+      }
+    });
+
+    it('should return error defining with invalid association type', () => {
+      try{
+        factory.define("ticketWrongAss", Ticket)
+        .attr("seat","22A")
+        .attr("price",16)
+        .assoc("MainDiscount","discountFact") //Using asssoc and should be assocAfter
+        true.should.be.false();
+      }catch(err){
+        should.exist(err);
+      }
+    });
+
+    it('should return error defining without model', () => {
+      try{
+        factory.define("ticketWrongModel")
+        .attr("seat","22A")
+        .attr("price",16)
+        .assoc("InvalidAs","saleDef", {total:16})
+        true.should.be.false();
+      }catch(err){
+        should.exist(err);
+      }
     });
 
     it('should create a belongs to association', () => {
@@ -286,6 +329,95 @@ describe('Factories test', function() {
       })
     });
 
+
+  });
+
+  describe('AssocMany', function() {
+
+    it('should define a salseman asociated to many stores', () => {
+      factory.define("storeDef", Store)
+      .attr("city","London")
+      factory.define("salesmanWithStores", Salesman)
+      .attr("name","Sus")
+      .assocMany("StoreHired","storeDef", [{city:"Paris"},{city:"Barcelona"}])
+
+      const assocManyConfig = factory.definitions.salesmanWithStores.config.assocMany;
+      assocManyConfig.should.have.property('StoreHired');
+      assocManyConfig.StoreHired.should.have.property('factoryName',"storeDef");
+      assocManyConfig.StoreHired.should.have.property('options',[{city:"Paris"},{city:"Barcelona"}]);
+      assocManyConfig.StoreHired.should.have.property('plural','StoreHired');
+    });
+
+
+
+    it('should create a belongs to many association', () => {
+      return factory.create('salesmanA')
+      .then((salesman) => {
+        salesman.should.have.property('name','Sus');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(2);
+        const storeP = salesman.StoreHired.find((s)=>{return s.city=="Paris"});
+        should.exist(storeP);
+        const storeL = salesman.StoreHired.find((s)=>{return s.city=="London"});
+        should.exist(storeL);
+      })
+    });
+
+    it('should create a belongs to many association with id', () => {
+      let storeId;
+      return factory.create('storeA',{city:"Mexico"})
+      .then((storeCreated) => {
+        storeId = storeCreated.id;
+        return factory.create('salesmanA',{StoreHired:[storeId]})
+      })
+      .then((salesman) => {
+        salesman.should.have.property('name','Sus');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(1);
+        salesman.StoreHired[0].should.have.property("city","Mexico");
+        salesman.StoreHired[0].should.have.property("id",storeId);
+      })
+    });
+
+    it('should create a belongs to many overwriting factory name', () => {
+      factory.define("storeNew", Store)
+      .attr("city","Berlin")
+      return factory.create('salesmanA',{StoreHired:[{_factoryName:"storeNew"}]})
+      .then((salesman) => {
+        salesman.should.have.property('name','Sus');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(1);
+        salesman.StoreHired[0].should.have.property("city","Berlin");
+      })
+    });
+
+    it('should create a belongs to many using size', () => {
+      return factory.create('salesmanA',{name: faker.name.firstName,StoreHired:{city:"LA",_size:10}})
+      .then((salesman) => {
+        salesman.should.have.property('name');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(10);
+        salesman.StoreHired[0].should.have.property("city","LA");
+      })
+    });
+
+    it('should save associated instance in same object and use it', () => {
+      factory.define("storeRandom", Store)
+      .attr("city",faker.address.city)
+      factory.define("salesmanWithRandomStores", Salesman)
+      .attr("name","Sus")
+      .assocMany("StoreHired","storeRandom", [{"$":"store1"},{city:"$store1.city","$":"store2"}])
+      return factory.create('salesmanWithRandomStores',{name:"Ale"})
+      .then((salesman) => {
+        salesman.should.have.property('name','Ale');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(2);
+        salesman['$'].should.have.property("store1");
+        salesman['$'].store1.should.have.property("city");
+        salesman['$'].should.have.property("store2");
+        salesman['$'].store2.should.have.property("city",salesman['$'].store1.city);
+      })
+    });
 
   });
 
