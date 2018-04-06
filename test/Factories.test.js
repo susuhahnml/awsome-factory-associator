@@ -236,7 +236,7 @@ describe('Factories test', function() {
       })
     });
 
-    it('should use saved instance attribute as attribute', () => {
+    it('should use saved definition attribute as attribute', () => {
       return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.total'})
       .then((ticket) => {
         ticket.should.have.property('seat','22A');
@@ -247,7 +247,7 @@ describe('Factories test', function() {
       })
     });
 
-    it('should use saved instance function as attribute', () => {
+    it('should use saved definition function as attribute', () => {
       return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal(3)'})
       .then((ticket) => {
         ticket.should.have.property('seat','22A');
@@ -256,7 +256,7 @@ describe('Factories test', function() {
       })
     });
 
-    it('should use saved instance function as attribute without attributes', () => {
+    it('should use saved definition function as attribute without attributes', () => {
       return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal()'})
       .then((ticket) => {
         ticket.should.have.property('seat','22A');
@@ -265,7 +265,7 @@ describe('Factories test', function() {
       })
     });
 
-    it('should use saved instance function as attribute without attributes', () => {
+    it('should use saved definition function as attribute without attributes', () => {
       return factory.create('ticketA', {Sale:{$:'saleSaved'},price:'$saleSaved.getTotal()'})
       .then((ticket) => {
         ticket.should.have.property('seat','22A');

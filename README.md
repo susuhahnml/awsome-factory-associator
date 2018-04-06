@@ -28,7 +28,7 @@ The javascript files inside the folder `test/factory`, will contain the definiti
 - *attributeName*: A String which references the name of the attribute. If an attribute must be **unique**, we advise you to use faker or auto-increment to avoid creation Errors.
 - *value*: The default value used in creations. If the value is a function it will be called in each creation to generate the final value. This value can be overwritten on each creation.
 - *options*: An optional object indicating some of the following options.
-  - auto_increment: In each instance creation will increment the value of the last creation by the number indicated in the auto_increment option. Starting at the initial value given. Sequence is shared among parent and children if not overwrited. If value is a string will add the sequence number at the end of the string starting in 1.
+  - auto_increment: In each definition creation will increment the value of the last creation by the number indicated in the auto_increment option. Starting at the initial value given. Sequence is shared among parent and children if not overwrited. If value is a string will add the sequence number at the end of the string starting in 1.
 
 
 ```javascript
@@ -83,7 +83,7 @@ can be overwritten in the current factory.
   factory.define("ticketWithLevel", Ticket)
   .parent("ticketFact")
   .attr("level",1)
-  //The created instance will have the attribute seat and a random price generated on the creation
+  //The created definition will have the attribute seat and a random price generated on the creation
 ```
 
 #### BelongsToOne Associations
@@ -271,7 +271,7 @@ In this case it will create 10 PointsOfSale all using Mexico as city, and the de
 factory.create("salesmanFact");
 ```
 
-When using ``assocAfter`` the main model (Ticket) will be created first, this way we have the ticket id(For instance 23). After its creation the associated model(Discount) will be created using the factoryName(discountFact) and setting the id of the created ticket using the foreignKey(ticket_key) adding `{ticket_key:23}` to the options object.  Since no options are passed it will use the values defined in the first factory. Creating a ticket associated to a discount.
+When using ``assocAfter`` the main model (Ticket) will be created first, this way we have the ticket id(For definition 23). After its creation the associated model(Discount) will be created using the factoryName(discountFact) and setting the id of the created ticket using the foreignKey(ticket_key) adding `{ticket_key:23}` to the options object.  Since no options are passed it will use the values defined in the first factory. Creating a ticket associated to a discount.
 
 ##### Passing options
 To pass options for this association the key used must be the *as* string used in the factory definition. The value must be an object to overwrite the default. In this case you can **not** use an **id** as options, since the associated model, if already created, must be related to another model.
@@ -360,9 +360,9 @@ In this example we continue with the last idea of a sale with tickets, but in th
 
 By setting ``{$:"ticketOne"}`` we can refer to such ticket in the creation of the second ticket, to use his passenger and link both tickets to the same passenger.
 
-Saved models can be used when defining attributes or options. A string must be used as value, such string must start with ``$`` followed by the name of the saved instance. Afterwards, the instance can be used to obtain an attribute or call a synchronus function defined in your model.
+Saved models can be used when defining attributes or options. A string must be used as value, such string must start with ``$`` followed by the name of the saved definition. Afterwards, the definition can be used to obtain an attribute or call a synchronus function defined in your model.
 
-The instances are saved right after they are created. Hence, make sure the instance is already created when using it.
+The definitions are saved right after they are created. Hence, make sure the definition is already created when using it.
 
 In order to refer to the main model created we can use ``$root``, this is a reserved name for this model.
 
