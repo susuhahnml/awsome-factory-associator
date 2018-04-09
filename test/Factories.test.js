@@ -348,7 +348,26 @@ describe('Factories test', function() {
       assocManyConfig.StoreHired.should.have.property('plural','StoreHired');
     });
 
+    it('should define a store asociated to many salesman using default as', () => {
+      factory.define("salesmanOne", Salesman)
+      .attr("name","Pedro")
 
+      factory.define("storeWithSalesmans", Store)
+      .attr("city","London")
+      .assocMany("Salesmans","salesmanOne",[{}])
+
+      const assocManyConfig = factory.definitions.storeWithSalesmans.config.assocMany;
+      assocManyConfig.should.have.property('Salesmans');
+      assocManyConfig.Salesmans.should.have.property('factoryName',"salesmanOne");
+      assocManyConfig.Salesmans.should.have.property('options',[{}]);
+      assocManyConfig.Salesmans.should.have.property('plural','Salesmans');
+      return factory.create("storeWithSalesmans")
+      .then((store) => {
+        store.should.have.property("Salesmans");
+        store.Salesmans.should.have.length(1);
+        store.Salesmans[0].should.have.property("name","Pedro");
+      })
+    });
 
     it('should create a belongs to many association', () => {
       return factory.create('salesmanA')
@@ -419,6 +438,128 @@ describe('Factories test', function() {
       })
     });
 
+  });
+
+  describe('hasOne', function() {
+
+    it('should define a ticket asociated to one discount', () => {
+      factory.define("discountFact", Discount)
+      .attr("percentage",20)
+
+      factory.define("ticketFactDiscount", Ticket)
+      .assocAfter("MainDiscount","discountFact",{percentage:50})
+
+      const assocAfterConfig = factory.definitions.ticketFactDiscount.config.assocAfter;
+      assocAfterConfig.should.have.property('MainDiscount');
+      assocAfterConfig.MainDiscount.should.have.property('factoryName',"discountFact");
+      assocAfterConfig.MainDiscount.should.have.property('options',{percentage:50});
+      assocAfterConfig.MainDiscount.should.have.property('foreignKey','ticket_key');
+    });
+
+    it('should create a has one association', () => {
+      return factory.create('ticketWithDiscount',{price:100})
+      .then((ticket) => {
+        ticket.should.have.property('price',100);
+        ticket.should.have.property('MainDiscount');
+        ticket.MainDiscount.should.have.property("percentage",10);
+      })
+    });
+
+    it('should create a has one association with options', () => {
+      return factory.create('ticketWithDiscount',{MainDiscount:{percentage:80}})
+      .then((ticket) => {
+        ticket.should.have.property('MainDiscount');
+        ticket.MainDiscount.should.have.property("percentage",80);
+      })
+    });
+
+    it('should create a has one association with diferent factory', () => {
+      factory.define("discountFull", Discount)
+      .attr("percentage",100)
+      return factory.create('ticketWithDiscount',{MainDiscount:{_factoryName:"discountFull"}})
+      .then((ticket) => {
+        ticket.should.have.property('MainDiscount');
+        ticket.MainDiscount.should.have.property("percentage",100);
+      })
+    });
+
+    it.skip('should respond error if id passed', () => {
+      try{
+        return factory.create('ticketWithDiscount',{MainDiscount:2})
+        .then((ticket) => {
+          true.should.be.false();
+        })
+      }catch(err){
+        should.exist(err);
+      }
+    });
+
+    it('should save has one association', () => {
+      return factory.create('ticketWithDiscount',{MainDiscount:{percentage:"$root.price", $:"discountSaved"}})
+      .then((ticket) => {
+        ticket.should.have.property('MainDiscount');
+        ticket.MainDiscount.should.have.property("percentage",ticket.price);
+        ticket.$.should.have.property("discountSaved");
+        ticket.$.discountSaved.should.have.property("id",ticket.MainDiscount.id);
+      })
+    });
+  });
+
+
+  describe('hasMany', function() {
+
+    it('should define a sale asociated to many tickets', () => {
+      factory.define("ticketFactNoSale", Ticket)
+
+      factory.define("saleFactWithTickets", Sale)
+      .attr("total",120)
+      .assocManyAfter("Tickets","ticketFactNoSale",[{price:120/2},{price:120/2}])
+
+      const assocManyAfterConfig = factory.definitions.saleFactWithTickets.config.assocManyAfter;
+      assocManyAfterConfig.should.have.property('Tickets');
+      assocManyAfterConfig.Tickets.should.have.property('factoryName',"ticketFactNoSale");
+      assocManyAfterConfig.Tickets.should.have.property('options',[{price:120/2},{price:120/2}]);
+      assocManyAfterConfig.Tickets.should.have.property('foreignKey','sale_key');
+    });
+
+    it('should create has many association', () => {
+      return factory.create('saleB')
+      .then((ticket) => {
+        ticket.should.have.property('Tickets');
+        ticket.Tickets.should.have.length(2);
+      })
+    });
+
+    it('should create has many with options', () => {
+      return factory.create('saleB',{Tickets:{_size:3,price:"$root.total"}})
+      .then((sale) => {
+        sale.should.have.property('Tickets');
+        sale.Tickets.should.have.length(3);
+        sale.Tickets[0].should.have.property('price',sale.total);
+        sale.Tickets[1].should.have.property('price',sale.total);
+        sale.Tickets[2].should.have.property('price',sale.total);
+      })
+    });
+
+    it.skip('should respond error if id passed', () => {
+      try{
+        return factory.create('saleB',{Tickets:[1]})
+        .then((sale) => {
+          true.should.be.false();
+        })
+      }catch(err){
+        should.exist(err);
+      }
+    });
+
+    it('should save has many association', () => {
+      return factory.create('saleB',{Tickets:[{$:"ticket1"}]})
+      .then((sale) => {
+        sale.should.have.property('Tickets');
+        sale.Tickets.should.have.length(1);
+        sale.$.should.have.property('ticket1');
+      })
+    });
   });
 
 });

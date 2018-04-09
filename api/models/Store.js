@@ -12,7 +12,6 @@ module.exports = {
   },
   associations: () => {
     Store.belongsToMany(Salesman, {
-      as: 'StoreHired',
       through: 'SalesmanStore',
       foreignKey: 'store_id'
     });

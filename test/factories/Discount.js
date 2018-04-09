@@ -2,7 +2,7 @@ const faker = require('faker');
 
 module.exports = (factory) => {
 
-  factory.define("discountFact", Discount)
+  factory.define("discountB", Discount)
   .attr('percentage',10);
 
 

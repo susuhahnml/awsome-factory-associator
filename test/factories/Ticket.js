@@ -12,5 +12,11 @@ module.exports = (factory) => {
   .attr("seat","22A")
   .attr("price",30)
   .assoc("Sale","saleA", {total:30})
-  
+
+  factory.define("ticketWithDiscount", Ticket)
+  .assocAfter("MainDiscount","discountB")
+
+  factory.define("ticketB", Ticket)
+
+
 }
