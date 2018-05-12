@@ -420,6 +420,18 @@ describe('Factories test', function() {
       })
     });
 
+    it('should create a belongs to many using size and save it', () => {
+      return factory.create('salesmanA',{name: faker.name.firstName,StoreHired:{city:"LA",_size:2, $:'store-'}})
+      .then((salesman) => {
+        salesman.should.have.property('name');
+        salesman.should.have.property('StoreHired');
+        salesman.StoreHired.should.have.length(2);
+        salesman.StoreHired[0].should.have.property("city","LA");
+        salesman.$.should.have.property('store-0');
+        salesman.$.should.have.property('store-1');
+      })
+    });
+
     it('should save associated instance in same object and use it', () => {
       factory.define("storeRandom", Store)
       .attr("city",faker.address.city)

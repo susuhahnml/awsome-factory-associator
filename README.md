@@ -28,7 +28,7 @@ The javascript files inside the folder `test/factory`, will contain the definiti
 - *attributeName*: A String which references the name of the attribute. If an attribute must be **unique**, we advise you to use faker or auto-increment to avoid creation Errors.
 - *value*: The default value used in creations. If the value is a function it will be called in each creation to generate the final value. This value can be overwritten on each creation.
 - *options*: An optional object indicating some of the following options.
-  - auto_increment: In each definition creation will increment the value of the last creation by the number indicated in the auto_increment option. Starting at the initial value given. Sequence is shared among parent and children if not overwrited. If value is a string will add the sequence number at the end of the string starting in 1.
+  - auto_increment: For every definition creation, the specified value will increase by the number indicated in the auto_increment option, starting at the initial value given. Sequence is shared among parent and children if not overwritten. If value is a string, it will add the sequence number at the end of the string starting in 1.
 
 
 ```javascript
@@ -44,7 +44,7 @@ To use this module it must be required in your file
 const factory = require("awsome-factory-associator");
 ```
 
-For factories to be defined you have to load them using using the following command once.
+For factories to be defined you have to load them using the following command once.
 We advise you to do so in the `bootstrap.test.js` file.
 ``` javascript
 factory.load();
@@ -152,7 +152,7 @@ With the options object the associated model attributes can be modified, by send
 ```javascript
   factory.create("ticketFact",{Sale:{total:100,date:'2018-2-1'}});
 ```
-In this case when creating the sale defined in the ticketFact definition using the saleFact factory, the obtect ``{total:100,date:'2018-2-1'}`` will be passed as options for this creation. This will create a ticket associated with a sale with total 100(rewriting the default 30), and with date 2018-2-1.
+In this case when creating the sale defined in the ticketFact definition using the saleFact factory, the object ``{total:100,date:'2018-2-1'}`` will be passed as options for this creation. This will create a ticket associated with a sale with total 100(rewriting the default 30), and with date 2018-2-1.
 
 
 ###### Overwriting factory name
@@ -165,7 +165,7 @@ The associated model can be created using a different factory by adding the attr
 In this case the created sale will use the factory *saleIncomplte* configuration.
 
 ###### New Associations on creation
-In each creation new associations can be added in the options even if not specified in the factory definition. In this case de attribute *_factoryName* is required in the options.
+In each creation new associations can be added in the options even if not specified in the factory definition. In this case the attribute *_factoryName* is required in the options.
 
 ```javascript
   factory.create("ticketFact",{Discount:{_factoryName: "discountFac"}});
@@ -178,7 +178,7 @@ In each creation new associations can be added in the options even if not specif
 ``.assocMany(as, factoryName, optionsArray)``
 - *as*: A String which references the *as* value to refer to the associated model. In case there is no *as* defined, the associated model **in its plural form** will work.
 - *factoryName*: The default name of the factory used to create the associated models. Can be overwritten in options using the key *_factoryName*.
-- *options*: An array of **Options object**. Each element of this array will trigger a creation of one associated model this elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating de number of elements to create with the key *_size* and the default options for each creation.
+- *options*: An array of **Options object**. Each element of this array will trigger a creation of one associated model. This elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating the number of elements to create with the key *_size* and the default options for each creation.
 
 
 ```javascript
@@ -220,11 +220,11 @@ factory.create("salesmanFact");
 ```
 
 It will first create the Salesman model, when this is created, it will create the
-associated models using the factory storeFact, one model passing ``{city:"Paris"}``as options, and another one without passing additional options. Once all teh stores are created, using the function ``setStoreHireds``*(This function is provided by Sequelize)* with the ids of the created stores, it will set the stores for the salemsman created in teh first step.
+associated models using the factory storeFact, one model passing ``{city:"Paris"}``as options, and another one without passing additional options. Once all the stores are created, using the function ``setStoreHireds``*(This function is provided by Sequelize)* with the ids of the created stores, it will set the stores for the salemsman created in the first step.
 
 ##### Passing array of options
 
-The options of the association definition can be overwrited in the creation with an array or an object as indicated in the *options* field defined above.
+The options of the association definition can be overwritten in the creation with an array or an object as indicated in the *options* field defined above.
 
 To pass options for a multiple association the key used must be the *as* string used in the factory definition.
 
@@ -236,12 +236,12 @@ This will create a store with city Tokio, Overwriting the default array with Par
 ```javascript
 factory.create("salesmanFact",{"StoreHired":[{},1]});
 ```
-In this case the first store will be have city London as defined in the options of the factory *storeFact*, and the second will refer to a Store already created with id 1.
+In this case the first store's city will be London as defined in the factory *storeFact* options. The second will refer to an existent store with id 1.
 
 ```javascript
 factory.create("salesmanFact",{"StoreHired":{_size:10, city:"Mexico"}});
 ```
-In this case it will create 10 PointsOfSale all using Mexico as city, and the default options of the factory *storeFact*. Then create the salesman and associated such points of sale.
+In this case it will create 10 Stores all using Mexico as city, and the default options of the factory *storeFact*. After that it will create the Salesman, associating every store with it.
 
 
 #### HasOne Associations
@@ -296,7 +296,7 @@ Creates a ticket with seat 1B. Then using the id of the ticket created creates a
 ``.assocManyAfter(as, factoryName, optionsArray)``
 - *as*: A String which references the as value to refer to the associated model. In case there is no as defined, the associated model **in its plural form** will work.
 - *factoryName*: The default name of the factory used to create the associated model. Can be overwritten in options using the key *_factoryName*.
-- *optionsArray*: An array of **Options object** (Using an id as option is not supported in this association). Each element of this array will trigger a creation of one associated model this elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating de number of elements to create and the default options for each creation.
+- *optionsArray*: An array of **Options object** (Using an id as option is not supported in this association). Each element of this array will trigger a creation of one associated model. This elements can use the options explored before. If a value passed is ``{}`` it will imply a creation without passing any options. Options might also be an object instead of an array, indicating de number of elements to create and the default options for each creation.
 
 ```javascript
   Ticket.belongsTo(Sale, {
@@ -366,6 +366,16 @@ In this example we continue with the last idea of a sale with tickets, but in th
   .attr("total",120)
   .assocManyAfter("Ticket","ticketFactNoSale",
   [{$:"ticketOne"},{passenger_key:"$ticketOne.passenger_key"}])
+
+  /**
+  * The save option '$' can also be used when using _size.
+  * in this case the each saved model will use the $ value as prefix adding
+  * a number starting in 0.
+  **/
+
+  factory.define("saleFactWithTicketsSaved", Sale)
+  .attr("total",120)
+  .assocManyAfter("Ticket","ticketFactNoSale",{_size:2,$:"ticket-"})
 ```
 
 By setting ``{$:"ticketOne"}`` we can refer to such ticket in the creation of the second ticket, to use his passenger and link both tickets to the same passenger.
@@ -387,6 +397,11 @@ All the saved models will be returned in the created object inside the attriute 
     //   passangerName: //The passenger model created
     // }
   })
+
+  factory.create("saleFactWithTicketsSaved")
+  .then((createdSale) => {
+    //cratedSale.$ will contain the keys ticket-0 and ticket-1 with the saved tickets
+  })
 ```
 
 #### InfinteLoops
@@ -394,17 +409,17 @@ When defining and using factories it is **important** to verify no loops are cra
 
 Example of definition **with loops**
 ```javascript
-factory.define("salsemanWithStores", Salesman)
+factory.define("salesmanWithStores", Salesman)
 .assocMany("Store","storeWithSalesman",[{}])
 
 factory.define("storeWithSalesman", Salesman)
-.assocMany("Store","salsemanWithStores",[{}])
+.assocMany("Store","salesmanWithStores",[{}])
 ```
 
 ```javascript
-fact.create("salsemanWithStores"); //Infinite loop
+factory.create("salesmanWithStores"); //Infinite loop
 ```
-Since the factory *salsemanWithStores* creates a store using the factory *storeWithSalemsman*, which creates a sale using this same factory *salsemanWithStores*, each creation will create one of the other. Hence, this function will never return.
+Since the factory *salesmanWithStores* creates a store using the factory *storeWithSalemsman*, which creates a sale using this same factory *salesmanWithStores*, each creation will create one of the other. Hence, this function will never return.
 
 ### Extra configurations
 Configuration file ``config/factory.js``
