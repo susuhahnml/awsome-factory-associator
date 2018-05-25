@@ -26,5 +26,12 @@ module.exports = {
         name: 'sale_key'
       }
     });
+  },
+  options: {
+    instanceMethods: {
+      getTotal: (optionalTotal) => {
+        return optionalTotal || 0;
+      }
+    }
   }
 };

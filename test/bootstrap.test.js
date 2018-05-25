@@ -28,7 +28,7 @@ const sailsrc = {
       }
     }
   },
-
+  port: 1451,
   models: {
     connection: 'testConnection',
     migrate: 'drop'
@@ -50,6 +50,7 @@ before((done) => {
       return done(err);
     }
     global.factory = require('../index.js');
+    factory.load();
     done();
   });
 });
