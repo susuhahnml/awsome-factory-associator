@@ -9,6 +9,9 @@ module.exports = {
     total: {
       type: Sequelize.INTEGER,
     },
+    cancelled_at: {
+      type: Sequelize.DATE,
+    }
   },
   associations: () => {
     Sale.belongsTo(Store, {

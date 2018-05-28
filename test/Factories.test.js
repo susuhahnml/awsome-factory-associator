@@ -82,6 +82,28 @@ describe('Factories test', function() {
         })
     });
 
+    it('should create using function arready called as attribute', () => {
+      factory.define('saleCancelled', Sale)
+        .attr("total", faker.random.number)
+        .attr("cancelled_at", faker.date.future(1))
+      return factory.create('saleCancelled')
+        .then((sale) => {
+          should.exist(sale.cancelled_at);
+          should.exist(sale.total);
+        })
+    });
+
+    it('should create using null as attribute', () => {
+      factory.define('saleNotCancelled', Sale)
+        .attr("total", faker.random.number)
+        .attr("cancelled_at", null)
+      return factory.create('saleNotCancelled')
+        .then((sale) => {
+          should.not.exist(sale.cancelled_at);
+          should.exist(sale.total);
+        })
+    });
+
     it('should create auto incremet for string', () => {
       factory.define('passengerAutoIncrement', Passenger)
         .attr("name", faker.lorem.word, {auto_increment:2});
