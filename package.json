@@ -1,6 +1,6 @@
 {
   "name": "awsome-factory-associator",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Provides a syntax to define factories with any kind of association.",
   "main": "index.js",
   "directories": {
