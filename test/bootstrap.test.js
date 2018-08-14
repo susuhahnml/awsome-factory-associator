@@ -16,15 +16,15 @@ const sailsrc = {
   },
   connections: {
     testConnection: {
-      user: 'Susana',
-      port: 5432,
-      database: 'factory_associatior',
-      password: '',
-      dialect: 'postgres',
+      user: process.env.USER || 'Susana',
+      port: process.env.PORT || 5432,
+      database: process.env.DB || 'factory_associatior',
+      password: process.env.PSSWD || '',
+      dialect: process.env.DIALECT || 'postgres',
       options: {
-        dialect: 'postgres',
-        host: 'localhost',
-        port: 5432
+        dialect: process.env.DIALECT || 'postgres',
+        host: process.env.HOST || 'localhost',
+        port: process.env.PORT || 5432
       }
     }
   },
@@ -56,7 +56,8 @@ before((done) => {
 });
 
 after((done) => {
-  sails.lower(done);
+  done();
+  sails.lower(process.exit);
 });
 
 beforeEach(() => {
