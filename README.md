@@ -1,4 +1,10 @@
 # The Awesome Factory Associator
+[![npm version](https://badge.fury.io/js/awsome-factory-associator.svg)](http://badge.fury.io/js/awsome-factory-associator)
+[![Dependencies](https://david-dm.org/susuhahnml/awsome-factory-associator.svg)](https://david-dm.org/susuhahnml/awsome-factory-associator)
+[![DevDependencies](https://david-dm.org/susuhahnml/awsome-factory-associator/dev-status.svg)](https://david-dm.org/susuhahnml/awsome-factory-associator?type=dev)
+[![GitHub license](https://img.shields.io/badge/license-MIT-green.svg)](https://raw.githubusercontent.com/susuhahnml/awsome-factory-associator/master/LICENSE)
+
+
   Provides a syntax to **define factories** with **any kind of association**. Helping you create models and the **environment** needed for each **test** with **inline awesome configuration**.
 
   This hook works with the **Sails.js** framework and using **Sequelize** as ORM.
@@ -7,7 +13,7 @@
 
 ## Setup
 ### Requirements
-- Salis.js
+- Sails.js
 - Sequelize
 
 ### Definition

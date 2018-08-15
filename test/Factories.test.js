@@ -517,15 +517,14 @@ describe('Factories test', function() {
       })
     });
 
-    it.skip('should respond error if id passed', () => {
-      try{
-        return factory.create('ticketWithDiscount',{MainDiscount:2})
+    it('should respond error if id passed', () => {
+      return factory.create('ticketWithDiscount',{MainDiscount:2})
         .then((ticket) => {
           true.should.be.false();
         })
-      }catch(err){
-        should.exist(err);
-      }
+        .catch((err) => {
+          err.message.should.equal("Ids can not be passed in MainDiscount since it is a HasOne or HasMany association.");
+        });
     });
 
     it('should save has one association', () => {
@@ -575,15 +574,14 @@ describe('Factories test', function() {
       })
     });
 
-    it.skip('should respond error if id passed', () => {
-      try{
-        return factory.create('saleB',{Tickets:[1]})
-        .then((sale) => {
-          true.should.be.false();
-        })
-      }catch(err){
-        should.exist(err);
-      }
+    it('should respond error if id passed', () => {
+      return factory.create('saleB',{Tickets:[1]})
+      .then((ticket) => {
+        true.should.be.false();
+      })
+      .catch((err) => {
+        err.message.should.equal("Ids can not be passed in Tickets since it is a HasOne or HasMany association.");
+      });
     });
 
     it('should save has many association', () => {
